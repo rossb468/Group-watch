@@ -1,0 +1,20 @@
+name: Core
+
+on:
+  push:
+    paths: ["Core/**", ".github/workflows/core.yml"]
+  pull_request:
+    paths: ["Core/**", ".github/workflows/core.yml"]
+  workflow_dispatch:
+
+jobs:
+  test-linux:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Swift version
+        run: swift --version
+      - name: Test
+        working-directory: Core
+        run: swift test 2>&1 | tail -150
+        shell: bash -o pipefail {0}
