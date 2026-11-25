@@ -42,4 +42,4 @@ jobs:
             -destination 'generic/platform=macOS' \
             -skipMacroValidation -skipPackagePluginValidation \
             CODE_SIGNING_ALLOWED=NO \
-            -quiet 2>&1 | grep -v "^note:" | tail -150
+            -quiet 2>&1 | { grep -v "^note:" || true; } | tail -150
