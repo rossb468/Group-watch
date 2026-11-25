@@ -1,0 +1,20 @@
+name = "groupwatch"
+main = "src/index.ts"
+compatibility_date = "2026-10-01"
+
+[[durable_objects.bindings]]
+name = "ROOMS"
+class_name = "Room"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["Room"]
+
+[vars]
+# Where the join page sends people who don't have the app yet. Empty hides the link.
+DOWNLOAD_URL = ""
+
+# Optional TURN relay for networks that block direct connections. Create a TURN key in
+# the Cloudflare dashboard (Realtime > TURN), then:
+#   npx wrangler secret put TURN_KEY_ID
+#   npx wrangler secret put TURN_KEY_API_TOKEN

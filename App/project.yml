@@ -1,0 +1,82 @@
+name: GroupWatch
+options:
+  bundleIdPrefix: com.rossbower
+  deploymentTarget:
+    macOS: "14.0"
+  createIntermediateGroups: true
+  developmentLanguage: en
+
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    MARKETING_VERSION: "0.1.0"
+    CURRENT_PROJECT_VERSION: "1"
+    MACOSX_DEPLOYMENT_TARGET: "14.0"
+    # Set your Apple Developer team ID here (or in Xcode) to sign and run.
+    DEVELOPMENT_TEAM: ""
+    # The signaling server. Replace after `npm run deploy` in Signaling/.
+    GW_SIGNALING_URL: "https://groupwatch.example.workers.dev"
+
+packages:
+  GroupWatchCore:
+    path: ../Core
+  MPVKit:
+    url: https://github.com/mpvkit/MPVKit
+    exactVersion: 1.1.0-n9.0.2
+  WebRTC:
+    url: https://github.com/stasel/WebRTC
+    exactVersion: 157.0.0
+
+targets:
+  GroupWatch:
+    type: application
+    platform: macOS
+    scheme: {}
+    sources:
+      - path: GroupWatch
+    dependencies:
+      - package: GroupWatchCore
+      - package: MPVKit
+        product: MPVKit
+      - package: WebRTC
+    info:
+      path: GroupWatch/Info.plist
+      properties:
+        CFBundleDisplayName: Group Watch
+        CFBundleName: Group Watch
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        LSApplicationCategoryType: public.app-category.entertainment
+        LSMinimumSystemVersion: $(MACOSX_DEPLOYMENT_TARGET)
+        NSHumanReadableCopyright: ""
+        NSMicrophoneUsageDescription: Group Watch uses the microphone so you can talk with the people you're watching with.
+        GWSignalingURL: $(GW_SIGNALING_URL)
+        CFBundleURLTypes:
+          - CFBundleURLName: com.rossbower.groupwatch.join
+            CFBundleURLSchemes: [groupwatch]
+        CFBundleDocumentTypes:
+          - CFBundleTypeName: Video
+            CFBundleTypeRole: Viewer
+            LSHandlerRank: Alternate
+            LSItemContentTypes:
+              - public.movie
+              - public.audiovisual-content
+              - org.matroska.mkv
+              - org.webmproject.webm
+    entitlements:
+      path: GroupWatch/GroupWatch.entitlements
+      properties:
+        com.apple.security.cs.allow-jit: true
+        com.apple.security.cs.disable-library-validation: true
+        com.apple.security.device.audio-input: true
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.rossbower.groupwatch
+        PRODUCT_NAME: Group Watch
+        ENABLE_HARDENED_RUNTIME: YES
+        CODE_SIGN_STYLE: Automatic
+        CODE_SIGN_IDENTITY: "-"
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        COMBINE_HIDPI_IMAGES: YES
+        ENABLE_USER_SCRIPT_SANDBOXING: NO
+        DEAD_CODE_STRIPPING: YES

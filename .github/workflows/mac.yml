@@ -1,0 +1,41 @@
+name: Mac
+
+on:
+  push:
+    paths: ["App/**", "Core/**", ".github/workflows/mac.yml"]
+  pull_request:
+    paths: ["App/**", "Core/**", ".github/workflows/mac.yml"]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-15
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v5
+      - name: Tools
+        run: |
+          xcodebuild -version
+          brew install xcodegen
+      - name: Generate project
+        run: xcodegen generate --spec App/project.yml
+      - name: Core tests (macOS)
+        working-directory: Core
+        run: swift test 2>&1 | tail -40
+        shell: bash -o pipefail {0}
+      - name: Cache packages
+        uses: actions/cache@v4
+        with:
+          path: ~/Library/Developer/Xcode/DerivedData/**/SourcePackages
+          key: spm-${{ hashFiles('App/project.yml') }}
+      - name: Build app
+        shell: bash -o pipefail {0}
+        run: |
+          xcodebuild build \
+            -project App/GroupWatch.xcodeproj \
+            -scheme GroupWatch \
+            -configuration Release \
+            -destination 'generic/platform=macOS' \
+            -skipMacroValidation -skipPackagePluginValidation \
+            CODE_SIGNING_ALLOWED=NO \
+            -quiet 2>&1 | grep -v "^note:" | tail -150
