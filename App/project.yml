@@ -14,8 +14,8 @@ settings:
     MACOSX_DEPLOYMENT_TARGET: "14.0"
     # Set your Apple Developer team ID here (or in Xcode) to sign and run.
     DEVELOPMENT_TEAM: ""
-    # The signaling server. Replace after `npm run deploy` in Signaling/.
-    GW_SIGNALING_URL: "https://groupwatch.example.workers.dev"
+    # The signaling server (deployed from Signaling/ with `npm run deploy`).
+    GW_SIGNALING_URL: "https://groupwatch.groupwatch-signaling.workers.dev"
 
 packages:
   GroupWatchCore:

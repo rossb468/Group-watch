@@ -24,7 +24,7 @@ enum Preferences {
     static var signalingURL: URL {
         if let url = URL(string: signalingOverride), url.scheme != nil { return url }
         let builtIn = Bundle.main.object(forInfoDictionaryKey: "GWSignalingURL") as? String ?? ""
-        return URL(string: builtIn) ?? URL(string: "https://groupwatch.example.workers.dev")!
+        return URL(string: builtIn) ?? URL(string: "https://groupwatch.groupwatch-signaling.workers.dev")!
     }
 
     /// Public link for an invite: opens the app through the server's join page.
