@@ -95,6 +95,7 @@ final class AppModel: SessionDelegate {
     @ObservationIgnored private var fingerprint: (hash: String, size: Int64)?
     @ObservationIgnored private var mediaAnnounced = false
     @ObservationIgnored private var playActivity: NSObjectProtocol?
+    @ObservationIgnored private var nowPlaying: NowPlaying?
 
     private init() {
         session = Session(displayName: Preferences.displayName, appVersion: Preferences.appVersion)
@@ -108,6 +109,7 @@ final class AppModel: SessionDelegate {
         timer.tolerance = 0.002
         RunLoop.main.add(timer, forMode: .common)
         self.timer = timer
+        nowPlaying = NowPlaying(model: self)
     }
 
     func shutdown() {
@@ -209,6 +211,8 @@ final class AppModel: SessionDelegate {
     // MARK: - Playback controls
 
     func togglePlayPause() { session.togglePlayPause() }
+    func play() { session.play() }
+    func pause() { session.pause() }
 
     func seek(to seconds: Double) {
         let limit = duration > 0 ? duration : .greatestFiniteMagnitude
@@ -348,6 +352,7 @@ final class AppModel: SessionDelegate {
         case let .duration(value):
             duration = value
             announceMediaIfReady()
+            updateNowPlaying()
         case .paused:
             break
         case let .busy(busy):
@@ -363,6 +368,16 @@ final class AppModel: SessionDelegate {
         // Act right away rather than waiting for the next tick.
         if fileLoaded { runController() }
         refreshPlaybackUI()
+        updateNowPlaying()
+    }
+
+    private func updateNowPlaying() {
+        nowPlaying?.update(
+            title: hasMedia ? mediaTitle : nil,
+            duration: duration,
+            position: session.currentPosition ?? 0,
+            playing: session.state?.playing ?? false
+        )
     }
 
     func session(_ session: Session, didReceiveChat message: ChatMessage) {

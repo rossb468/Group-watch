@@ -155,13 +155,14 @@ enum KeyHandler {
             break
         }
 
-        switch event.charactersIgnoringModifiers?.lowercased() {
+        let key = event.charactersIgnoringModifiers?.lowercased() ?? ""
+        switch key {
         case "f": Actions.toggleFullScreen()
         case "m": model.toggleMute()
         case "c": model.chatOpen.toggle()
         case "s": model.cycleSubtitles()
         case "a": model.cycleAudioTrack()
-        case let key? where Int(key).map({ (1...quickReactions.count).contains($0) }) == true:
+        case _ where Int(key).map({ (1...quickReactions.count).contains($0) }) == true:
             guard model.hasMedia else { return false }
             model.react(quickReactions[Int(key)! - 1])
         default:

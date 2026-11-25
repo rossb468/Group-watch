@@ -7,6 +7,10 @@ on:
     paths: ["App/**", "Core/**", ".github/workflows/mac.yml"]
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: macos-15
