@@ -125,8 +125,30 @@ struct ClickCatcher: NSViewRepresentable {
         var onClick: (() -> Void)?
         var onDoubleClick: (() -> Void)?
 
+        private var downEvent: NSEvent?
+        private var dragged = false
+
         override func mouseDown(with event: NSEvent) {
             window?.makeFirstResponder(nil)
+            downEvent = event
+            dragged = false
+        }
+
+        // Dragging the video moves the window, like QuickTime.
+        override func mouseDragged(with event: NSEvent) {
+            guard !dragged, let down = downEvent else { return }
+            let dx = event.locationInWindow.x - down.locationInWindow.x
+            let dy = event.locationInWindow.y - down.locationInWindow.y
+            guard dx * dx + dy * dy > 9 else { return }
+            dragged = true
+            if let window, !window.styleMask.contains(.fullScreen) {
+                window.performDrag(with: down)
+            }
+        }
+
+        override func mouseUp(with event: NSEvent) {
+            defer { downEvent = nil }
+            guard !dragged else { return }
             if event.clickCount == 2 { onDoubleClick?() } else if event.clickCount == 1 { onClick?() }
         }
 
