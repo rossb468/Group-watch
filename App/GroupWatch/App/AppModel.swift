@@ -145,9 +145,9 @@ final class AppModel: SessionDelegate {
         player.load(url)
         NSDocumentController.shared.noteNewRecentDocumentURL(url)
 
-        Task.detached(priority: .userInitiated) { [weak self] in
+        DispatchQueue.global(qos: .userInitiated).async {
             let result = try? MediaFingerprint.compute(for: url)
-            await MainActor.run {
+            DispatchQueue.main.async { [weak self] in
                 guard let self, self.mediaURL == url else { return }
                 self.fingerprint = result.map { (hash: $0.fingerprint, size: $0.size) } ?? (hash: url.lastPathComponent, size: 0)
                 self.announceMediaIfReady()

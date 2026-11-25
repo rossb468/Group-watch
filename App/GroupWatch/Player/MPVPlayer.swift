@@ -226,7 +226,7 @@ final class MPVPlayer {
 
     private func command(_ args: [String]) {
         guard let mpv = handle else { return }
-        var cStrings = args.map { strdup($0) }
+        let cStrings = args.map { strdup($0) }
         defer { cStrings.forEach { free($0) } }
         var argv: [UnsafePointer<CChar>?] = cStrings.map { UnsafePointer($0) }
         argv.append(nil)
